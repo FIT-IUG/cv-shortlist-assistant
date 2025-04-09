@@ -24,10 +24,14 @@ class EmbeddingGenerator:
                                                    use_auth_token=token)
             print("Model and tokenizer loaded successfully!")
         except Exception as e:
+            self.tokenizer = None
+            self.model = None
             print(f"Error loading model: {e}")
 
 
     def generate(self, text, max_length=512):
+        if self.tokenizer is None or self.model is None:
+            raise ValueError("Tokenizer or model not loaded properly.")
         # Tokenize the input text
         inputs = self.tokenizer(
             text,
