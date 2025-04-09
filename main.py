@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+import os
 import streamlit as sl
 
 from Resume import Resume
@@ -19,6 +21,12 @@ from embeddings.embeddingGen import EmbeddingGenerator
 from testing.test_File import test_pdfFile_parsing, test_docxFile_parsing, test_embedding, test_similarity, \
     test_threshold, \
     test_request, test_extraction, test_shortlisting, test_analysis
+from huggingface_hub import login
+
+# Login to Hugging Face Hub
+load_dotenv()
+token = os.getenv("HUGGINGFACE_HUB_TOKEN")
+login(token=token)
 
 
 def main():
