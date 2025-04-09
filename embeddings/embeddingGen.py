@@ -1,15 +1,18 @@
 from transformers import AutoTokenizer, AutoModel
 import torch
+from dotenv import load_dotenv
+import os
 
 torch.classes.__path__ = []  # to solve the error that happen between torch and streamlit
 
 
 class EmbeddingGenerator:
-    def __init__(self, modelname="nomic-ai/nomic-embed-text-v1"):
+    def __init__(self):
         self.tokenizer = AutoTokenizer.from_pretrained(
-            modelname, local_files_only=True
+            "nomic-ai/nomic-embed-text-v1", use_auth_token=os.getenv("HUGGINGFACE_HUB_TOKEN")
         )
-        self.model = AutoModel.from_pretrained(modelname, local_files_only=True)
+        self.model = AutoModel.from_pretrained("nomic-ai/nomic-embed-text-v1",
+                                               use_auth_token=os.getenv("HUGGINGFACE_HUB_TOKEN"))
 
     def generate(self, text, max_length=512):
         # Tokenize the input text
