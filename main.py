@@ -30,7 +30,7 @@ except:
     load_dotenv()
     token = os.getenv("HUGGINGFACE_HUB_TOKEN")
 
-#login(token=token)
+login(token=token)
 
 def main():
     sl.title(":memo: Resume Matcher")
