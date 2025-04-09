@@ -10,6 +10,8 @@ except:
     load_dotenv()
     token = os.getenv("HUGGINGFACE_HUB_TOKEN")
     
+print(f"Token loaded: {token}")
+    
 if not token:
     raise ValueError("HuggingFace token is missing or not loaded properly!")
 torch.classes.__path__ = []  # to solve the error that happen between torch and streamlit
