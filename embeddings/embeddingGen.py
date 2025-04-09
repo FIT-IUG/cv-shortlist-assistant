@@ -2,6 +2,14 @@ from transformers import AutoTokenizer, AutoModel
 import torch
 import os
 
+try:
+    import streamlit as st
+    token = st.secrets["HUGGINGFACE_HUB_TOKEN"]
+except:
+    from dotenv import load_dotenv
+    load_dotenv()
+    token = os.getenv("HUGGINGFACE_HUB_TOKEN")
+
 torch.classes.__path__ = []  # to solve the error that happen between torch and streamlit
 
 
@@ -10,10 +18,10 @@ class EmbeddingGenerator:
         try:
             self.tokenizer = AutoTokenizer.from_pretrained(
                 "nomic-ai/nomic-embed-text-v1", trust_remote_code=True,
-                use_auth_token=os.getenv("HUGGINGFACE_HUB_TOKEN")
+                use_auth_token=token
             )
             self.model = AutoModel.from_pretrained("nomic-ai/nomic-embed-text-v1", trust_remote_code=True,
-                                                   use_auth_token=os.getenv("HUGGINGFACE_HUB_TOKEN"))
+                                                   use_auth_token=token)
             print("Model and tokenizer loaded successfully!")
         except Exception as e:
             print(f"Error loading model: {e}")
