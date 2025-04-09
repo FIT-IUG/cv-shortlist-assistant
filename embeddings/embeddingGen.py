@@ -15,6 +15,8 @@ torch.classes.__path__ = []  # to solve the error that happen between torch and 
 
 class EmbeddingGenerator:
     def __init__(self):
+    if not token:
+            raise ValueError("HuggingFace token is missing or not loaded properly!")
         try:
             self.tokenizer = AutoTokenizer.from_pretrained(
                 "nomic-ai/nomic-embed-text-v1", trust_remote_code=True,
@@ -24,15 +26,15 @@ class EmbeddingGenerator:
                                                    use_auth_token=token)
             print("Model and tokenizer loaded successfully!")
         except Exception as e:
+            print(f"Error loading model: {e}")
             self.tokenizer = None
             self.model = None
-            print(f"Error loading model: {e}")
 
 
     def generate(self, text, max_length=512):
-        if self.tokenizer is None or self.model is None:
+        if not self.tokenizer or not self.model:
             raise ValueError("Tokenizer or model not loaded properly.")
-        # Tokenize the input text
+
         inputs = self.tokenizer(
             text,
             padding=True,
