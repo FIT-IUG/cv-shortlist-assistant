@@ -15,7 +15,7 @@ torch.classes.__path__ = []  # to solve the error that happen between torch and 
 
 class EmbeddingGenerator:
     def __init__(self):
-    if not token:
+        if not token:
             raise ValueError("HuggingFace token is missing or not loaded properly!")
         try:
             self.tokenizer = AutoTokenizer.from_pretrained(
