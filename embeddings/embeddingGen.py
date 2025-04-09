@@ -2,10 +2,13 @@ from dotenv import load_dotenv
 import os
 from transformers import AutoTokenizer, AutoModel
 import torch
+from huggingface_hub import login
 
 torch.classes.__path__ = []  # to solve the error that happen between torch and streamlit
 load_dotenv()
 EMBED_MODEL = os.getenv("EMBED_MODEL")
+token = os.getenv("HUGGINGFACE_HUB_TOKEN")
+login(token=token)
 
 
 class EmbeddingGenerator:
