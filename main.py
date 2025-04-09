@@ -23,6 +23,7 @@ from testing.test_File import test_pdfFile_parsing, test_docxFile_parsing, test_
     test_request, test_extraction, test_shortlisting, test_analysis
 from huggingface_hub import login
 
+os.environ["HF_HUB_OFFLINE"] = "0"
 # Login to Hugging Face Hub
 load_dotenv()
 token = os.getenv("HUGGINGFACE_HUB_TOKEN")
