@@ -1,6 +1,7 @@
-from dotenv import load_dotenv
-import os
 import streamlit as sl
+from dotenv import load_dotenv
+from huggingface_hub import login
+import os
 
 from Resume import Resume
 from evaluation.similarity import calculate_similarity, filter_by_threshold
@@ -21,14 +22,15 @@ from embeddings.embeddingGen import EmbeddingGenerator
 from testing.test_File import test_pdfFile_parsing, test_docxFile_parsing, test_embedding, test_similarity, \
     test_threshold, \
     test_request, test_extraction, test_shortlisting, test_analysis
-from huggingface_hub import login
 
-os.environ["HF_HUB_OFFLINE"] = "0"
-# Login to Hugging Face Hub
-load_dotenv()
-token = os.getenv("HUGGINGFACE_HUB_TOKEN")
+ # Load Hugging Face token (from secrets.toml on Streamlit or .env locally)
+try:
+    token = sl.secrets["HUGGINGFACE_HUB_TOKEN"]
+except:
+    load_dotenv()
+    token = os.getenv("HUGGINGFACE_HUB_TOKEN")
+
 login(token=token)
-
 
 def main():
     sl.title(":memo: Resume Matcher")
