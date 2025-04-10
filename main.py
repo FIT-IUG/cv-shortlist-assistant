@@ -30,7 +30,7 @@ from testing.test_File import test_pdfFile_parsing, test_docxFile_parsing, test_
 #     load_dotenv()
 #     token = os.getenv("HUGGINGFACE_HUB_TOKEN")
 
-login(token="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")
+# login(token=token)
 
 
 def main():
