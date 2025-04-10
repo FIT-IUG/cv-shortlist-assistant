@@ -53,7 +53,7 @@ RESUME_PROMPT3 = """
     and output it in the format: 
     - Best Resume: [Name of the applicant]
     - [why this was concluded as best resume]
-    - Email Address: [email address of the applicant]
+    - Email Address: [email address of the best applicant]
         
     Text:
     {prev_data}
