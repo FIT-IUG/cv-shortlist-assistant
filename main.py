@@ -24,15 +24,20 @@ from testing.test_File import test_pdfFile_parsing, test_docxFile_parsing, test_
     test_request, test_extraction, test_shortlisting, test_analysis
 
  # Load Hugging Face token (from secrets.toml on Streamlit or .env locally)
-try:
-    token = sl.secrets["HUGGINGFACE_HUB_TOKEN"]
-except:
-    load_dotenv()
-    token = os.getenv("HUGGINGFACE_HUB_TOKEN")
+# try:
+#     token = sl.secrets["HUGGINGFACE_HUB_TOKEN"]
+# except:
+#     load_dotenv()
+#     token = os.getenv("HUGGINGFACE_HUB_TOKEN")
 
-#login(token=token)
+login(token="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")
+
 
 def main():
+    # st.markdown("*Streamlit* is **really** ***cool***.")
+    # st.markdown('''
+    #     :red[Streamlit] :orange[can] :green[write] :blue[text] :violet[in]
+    #     :gray[pretty] :rainbow[colors] and :blue-background[highlight] text.''')
     sl.title(":memo: Resume Matcher")
     # Files uploader
     job_text = sl.text_input("Job Description")
@@ -41,7 +46,7 @@ def main():
     )
 
     # User-defined criteria
-    sl.write("### Evaluation Criteria")
+    sl.write("### *Evaluation Criteria*")
     required_skills = sl.text_input(
         "Required skills (comma-separated)", "Python, Machine Learning"
     )
@@ -60,7 +65,7 @@ def main():
                     return
 
                 # Extract text from resumes
-                sl.write("Extracting text from resumes...")
+                sl.write(" :red[Extracting text from resumes...]")
                 resumes = []
                 for f in resume_files:
                     if f.name.endswith(".pdf"):
@@ -71,14 +76,17 @@ def main():
                         sl.error(f"Unsupported resume file format: {f.name}")
                         return
                     if not text:
-                        sl.error("No valid resume texts found.")
+                        sl.error("Resume texts are empty!")
                         return
                     else:
                         resumes.append(Resume(text))
 
-                # Generating Embedding for the job description and resumes
+                # Generating Embedding for the job description
                 embedder = EmbeddingGenerator()
+                sl.write(" :red[Generating embedding for the job description...]")
                 job_embedding = embedder.generate(job_text)
+                # Generate resume embeddings and cosine similarity
+                sl.write(" :red[Generating embedding and Cosine Similarity for each resume...]")
                 for i, resume in enumerate(resumes):
                     emb = embedder.generate(resume.text)
                     resume.embedding = emb
@@ -88,9 +96,11 @@ def main():
 
                 # returns sorted shortlisted resumes based on a threshold value compared
                 # with the cosine similarity of each resume
+                sl.write(" :red[Filtering resumes based on threshold...]")
                 resumes = filter_by_threshold(resumes, 0.5450)
 
                 # Extracting key features from the resumes
+                sl.write(" :red[Extracting key features from the filtered resumes...]")
                 resume_features = [
                     make_request(extract_info(
                         resumes,
@@ -117,12 +127,16 @@ def main():
                     resumes_f.append(resume)
                     i = i + 1
 
+                sl.divider()
                 # shortlist the resumes into top 5
+                sl.write(" :red[Generating shortlist of top 5 applicants...]")
                 short = make_request(shortlist(RESUME_PROMPT2, resumes_f))
-                # Analyze top candidates' strengths and weaknesses, then conclude the best resume
-                analysis = make_request(final_analysis(RESUME_PROMPT3, job_text, short))
-
                 sl.write(short)  # output shortlist
+                sl.divider()
+                # Analyze top candidates' strengths and weaknesses, then conclude the best resume
+                sl.write(" :red[Analyzing shortlist's strengths and weaknesses, "
+                         "and concluding the best applicant...]")
+                analysis = make_request(final_analysis(RESUME_PROMPT3, job_text, short))
                 sl.write(analysis)  # output analysis
 
             except Exception as e:
