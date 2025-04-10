@@ -18,7 +18,6 @@ class EmbeddingGenerator:
         except Exception as e:
             print(f"Error loading model: {e}")
 
-
     def generate(self, text, max_length=512):
         # Tokenize the input text
         inputs = self.tokenizer(
