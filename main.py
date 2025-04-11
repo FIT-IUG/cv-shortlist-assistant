@@ -19,6 +19,8 @@ from embeddings.embeddingGen import EmbeddingGenerator
 from testing.test_File import test_pdfFile_parsing, test_docxFile_parsing, test_embedding, test_similarity, \
     test_threshold, \
     test_request, test_extraction, test_shortlisting, test_analysis
+import os
+os.environ.pop('HF_HUB_OFFLINE', None)
 
 
 def main():
