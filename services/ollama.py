@@ -77,7 +77,7 @@ def make_request(prompt):
         }
 
         # Make the API request
-        response = requests.post(API_URL, headers=headers, json=payload)
+        response = requests.post("API_URL", headers=headers, json=payload)
         response.raise_for_status()  # Raise an error for bad status codes
 
         # Debug: Print the response and status code
