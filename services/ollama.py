@@ -57,27 +57,22 @@ RESUME_PROMPT3 = """
     {prev_data}
 """
 
-load_dotenv()
-API_URL = os.getenv("API_URL")
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
 
-
-def make_request(prompt):
+def make_request(prompt, api):
     try:
         # OpenRouter API configuration
-        headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json",
+        headers = {"Authorization": f"Bearer {api}", "Content-Type": "application/json",
                    "HTTP-Referer": "https://cv-shortlist-assistant.streamlit.app/"}
         payload = {
-            "model": OLLAMA_MODEL,  # model name as shown in openrouter website
+            "model": "qwen/qwq-32b:free",  # model name as shown in openrouter website
             "messages": [
-                # {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt},
             ],
         }
 
         # Make the API request
-        response = requests.post("API_URL", headers=headers, json=payload)
+        response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
         response.raise_for_status()  # Raise an error for bad status codes
 
         # Debug: Print the response and status code

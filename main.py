@@ -19,8 +19,10 @@ from embeddings.embeddingGen import EmbeddingGenerator
 from testing.test_File import test_pdfFile_parsing, test_docxFile_parsing, test_embedding, test_similarity, \
     test_threshold, \
     test_request, test_extraction, test_shortlisting, test_analysis
-import os
-os.environ.pop('HF_HUB_OFFLINE', None)
+# load_dotenv()
+# API_URL = os.getenv("API_URL")
+OPENROUTER_API_KEY = sl.secrets["OPENROUTER_API_KEY"]
+# OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
 
 
 def main():
@@ -98,7 +100,7 @@ def main():
                         required_skills,
                         education_level,
 
-                    ))
+                    ), OPENROUTER_API_KEY)
                     for resume in resumes
                 ]
 
@@ -117,13 +119,13 @@ def main():
                 sl.divider()
                 # shortlist the resumes into top 5
                 sl.write(" :red[Generating shortlist of top 5 applicants...]")
-                short = make_request(shortlist(RESUME_PROMPT2, resumes_f))
+                short = make_request(shortlist(RESUME_PROMPT2, resumes_f), OPENROUTER_API_KEY)
                 sl.write(short)  # output shortlist
                 sl.divider()
                 # Analyze top candidates' strengths and weaknesses, then conclude the best resume
                 sl.write(" :red[Analyzing shortlist's strengths and weaknesses, "
                          "and concluding the best applicant...]")
-                analysis = make_request(final_analysis(RESUME_PROMPT3, job_text, short))
+                analysis = make_request(final_analysis(RESUME_PROMPT3, job_text, short), OPENROUTER_API_KEY)
                 sl.write(analysis)  # output analysis
 
             except Exception as e:
