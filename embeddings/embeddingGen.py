@@ -1,36 +1,17 @@
 from transformers import AutoTokenizer, AutoModel
 import torch
-import os
 
-# try:
-#     import streamlit as st
-#     token = st.secrets["HUGGINGFACE_HUB_TOKEN"]
-#     api_url = st.secrets["API_URL"]
-# except:
-#     from dotenv import load_dotenv
-#     load_dotenv()
-#     token = os.getenv("HUGGINGFACE_HUB_TOKEN")
-#     api_url = os.getenv("API_URL")
-    
-# print(f"Token loaded: {token}")
-# if api_url is None:
-#     raise ValueError("API_URL is not defined! Add it to secrets.toml.")
-# if not token:
-#     raise ValueError("HuggingFace token is missing or not loaded properly!")
 torch.classes.__path__ = []  # to solve the error that happen between torch and streamlit
 
 
 class EmbeddingGenerator:
     def __init__(self):
-        # if not token:
-        #     raise ValueError("HuggingFace token is missing or not loaded properly!")
+
         try:
             self.tokenizer = AutoTokenizer.from_pretrained(
-                "nomic-ai/nomic-embed-text-v1", trust_remote_code=True,
-                token="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"
+                "nomic-ai/nomic-embed-text-v1", trust_remote_code=True
             )
-            self.model = AutoModel.from_pretrained("nomic-ai/nomic-embed-text-v1", trust_remote_code=True,
-                                                   token="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")
+            self.model = AutoModel.from_pretrained("nomic-ai/nomic-embed-text-v1", trust_remote_code=True)
             print("Model and tokenizer loaded successfully!")
         except Exception as e:
             print(f"Error loading model: {e}")

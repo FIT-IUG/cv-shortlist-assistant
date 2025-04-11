@@ -1,5 +1,3 @@
-import time
-
 from dotenv import load_dotenv
 import os
 import requests
@@ -61,14 +59,14 @@ RESUME_PROMPT3 = """
 
 load_dotenv()
 API_URL = os.getenv("API_URL")
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+# OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
 
 
-def make_request(prompt):
+def make_request(prompt, api):
     try:
         # OpenRouter API configuration
-        headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"}
+        headers = {"Authorization": f"Bearer {api}", "Content-Type": "application/json"}
         payload = {
             "model": OLLAMA_MODEL,  # model name as shown in openrouter website
             "messages": [
