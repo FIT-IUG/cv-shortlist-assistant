@@ -59,18 +59,19 @@ RESUME_PROMPT3 = """
 
 load_dotenv()
 API_URL = os.getenv("API_URL")
-# OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
 
 
-def make_request(prompt, api):
+def make_request(prompt):
     try:
         # OpenRouter API configuration
-        headers = {"Authorization": f"Bearer {api}", "Content-Type": "application/json"}
+        headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json",
+                   "HTTP-Referer": "https://cv-shortlist-assistant.streamlit.app/"}
         payload = {
             "model": OLLAMA_MODEL,  # model name as shown in openrouter website
             "messages": [
-                {"role": "system", "content": "You are a helpful assistant."},
+                # {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt},
             ],
         }
@@ -94,7 +95,8 @@ def make_request(prompt, api):
         return f"{e}"
 
 
-def extract_info(resume_texts, text, job_text, prompt_template, min_experience=None, required_skills=None, education_level=None):
+def extract_info(resume_texts, text, job_text, prompt_template, min_experience=None, required_skills=None,
+                 education_level=None):
     # Inject user criteria into the prompt
     prompt = prompt_template.format(
         min_experience=min_experience,

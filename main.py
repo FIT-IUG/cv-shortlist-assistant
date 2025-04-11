@@ -22,10 +22,6 @@ from testing.test_File import test_pdfFile_parsing, test_docxFile_parsing, test_
 
 
 def main():
-    with sl.sidebar:
-        openrouter_api_key = sl.text_input("OpenRouter API Key", key="api_key", type="password")
-        "[Get an OpenRouter API key](https://openrouter.ai/settings/keys)"
-
     sl.title(":memo: Resume Matcher")
     # Files uploader
     job_text = sl.text_input("Job Description")
@@ -46,95 +42,92 @@ def main():
 
     # Submit button
     if sl.button("Submit"):
-        if openrouter_api_key:
-            if job_text and resume_files:
-                try:
-                    # Validate job text
-                    if not job_text.strip():
-                        sl.error("The job description file is empty.")
+        if job_text and resume_files:
+            try:
+                # Validate job text
+                if not job_text.strip():
+                    sl.error("The job description file is empty.")
+                    return
+
+                # Extract text from resumes
+                sl.write(" :red[Extracting text from resumes...]")
+                resumes = []
+                for f in resume_files:
+                    if f.name.endswith(".pdf"):
+                        text = extract_text_from_pdf(f)
+                    elif f.name.endswith(".docx"):
+                        text = extract_text_from_docx(f)
+                    else:
+                        sl.error(f"Unsupported resume file format: {f.name}")
                         return
+                    if not text:
+                        sl.error("Resume texts are empty!")
+                        return
+                    else:
+                        resumes.append(Resume(text))
 
-                    # Extract text from resumes
-                    sl.write(" :red[Extracting text from resumes...]")
-                    resumes = []
-                    for f in resume_files:
-                        if f.name.endswith(".pdf"):
-                            text = extract_text_from_pdf(f)
-                        elif f.name.endswith(".docx"):
-                            text = extract_text_from_docx(f)
-                        else:
-                            sl.error(f"Unsupported resume file format: {f.name}")
-                            return
-                        if not text:
-                            sl.error("Resume texts are empty!")
-                            return
-                        else:
-                            resumes.append(Resume(text))
+                # Generating Embedding for the job description
+                embedder = EmbeddingGenerator()
+                sl.write(" :red[Generating embedding for the job description...]")
+                job_embedding = embedder.generate(job_text)
+                # Generate resume embeddings and cosine similarity
+                sl.write(" :red[Generating embedding and Cosine Similarity for each resume...]")
+                for i, resume in enumerate(resumes):
+                    emb = embedder.generate(resume.text)
+                    resume.embedding = emb
+                    # Generating cosine similarity of each resume using the generated embedding
+                    # for the job description and the resume
+                    resume.similarity = calculate_similarity(job_embedding, emb)
 
-                    # Generating Embedding for the job description
-                    embedder = EmbeddingGenerator()
-                    sl.write(" :red[Generating embedding for the job description...]")
-                    job_embedding = embedder.generate(job_text)
-                    # Generate resume embeddings and cosine similarity
-                    sl.write(" :red[Generating embedding and Cosine Similarity for each resume...]")
-                    for i, resume in enumerate(resumes):
-                        emb = embedder.generate(resume.text)
-                        resume.embedding = emb
-                        # Generating cosine similarity of each resume using the generated embedding
-                        # for the job description and the resume
-                        resume.similarity = calculate_similarity(job_embedding, emb)
+                # returns sorted shortlisted resumes based on a threshold value compared
+                # with the cosine similarity of each resume
+                sl.write(" :red[Filtering resumes based on threshold...]")
+                resumes = filter_by_threshold(resumes, 0.5450)
 
-                    # returns sorted shortlisted resumes based on a threshold value compared
-                    # with the cosine similarity of each resume
-                    sl.write(" :red[Filtering resumes based on threshold...]")
-                    resumes = filter_by_threshold(resumes, 0.5450)
+                # Extracting key features from the resumes
+                sl.write(" :red[Extracting key features from the filtered resumes...]")
+                resume_features = [
+                    make_request(extract_info(
+                        resumes,
+                        resume.text,
+                        job_text,
+                        RESUME_PROMPT,
+                        min_experience,
+                        required_skills,
+                        education_level,
 
-                    # Extracting key features from the resumes
-                    sl.write(" :red[Extracting key features from the filtered resumes...]")
-                    resume_features = [
-                        make_request(extract_info(
-                            resumes,
-                            resume.text,
-                            job_text,
-                            RESUME_PROMPT,
-                            min_experience,
-                            required_skills,
-                            education_level,
+                    ))
+                    for resume in resumes
+                ]
 
-                        ), openrouter_api_key)
-                        for resume in resumes
-                    ]
+                # output the extracted features and cosine similarity for each resume
+                sl.write("### Extracted Resume Features:")
+                resumes_f = []
+                i = 1
+                for features, res in zip(resume_features, resumes):
+                    sl.write(f"Resume {i}:")
+                    sl.write(features)
+                    sl.write(f"Cosine Similarity: {res.similarity}")
+                    resume = f"Resume {i}: {features}\nCosine Similarity: {res.similarity}"
+                    resumes_f.append(resume)
+                    i = i + 1
 
-                    # output the extracted features and cosine similarity for each resume
-                    sl.write("### Extracted Resume Features:")
-                    resumes_f = []
-                    i = 1
-                    for features, res in zip(resume_features, resumes):
-                        sl.write(f"Resume {i}:")
-                        sl.write(features)
-                        sl.write(f"Cosine Similarity: {res.similarity}")
-                        resume = f"Resume {i}: {features}\nCosine Similarity: {res.similarity}"
-                        resumes_f.append(resume)
-                        i = i + 1
+                sl.divider()
+                # shortlist the resumes into top 5
+                sl.write(" :red[Generating shortlist of top 5 applicants...]")
+                short = make_request(shortlist(RESUME_PROMPT2, resumes_f))
+                sl.write(short)  # output shortlist
+                sl.divider()
+                # Analyze top candidates' strengths and weaknesses, then conclude the best resume
+                sl.write(" :red[Analyzing shortlist's strengths and weaknesses, "
+                         "and concluding the best applicant...]")
+                analysis = make_request(final_analysis(RESUME_PROMPT3, job_text, short))
+                sl.write(analysis)  # output analysis
 
-                    sl.divider()
-                    # shortlist the resumes into top 5
-                    sl.write(" :red[Generating shortlist of top 5 applicants...]")
-                    short = make_request(shortlist(RESUME_PROMPT2, resumes_f), openrouter_api_key)
-                    sl.write(short)  # output shortlist
-                    sl.divider()
-                    # Analyze top candidates' strengths and weaknesses, then conclude the best resume
-                    sl.write(" :red[Analyzing shortlist's strengths and weaknesses, "
-                             "and concluding the best applicant...]")
-                    analysis = make_request(final_analysis(RESUME_PROMPT3, job_text, short), openrouter_api_key)
-                    sl.write(analysis)  # output analysis
-
-                except Exception as e:
-                    sl.error(f"An error occurred: {e}")
-            else:
-                sl.warning("Please upload a job description and at least one resume.")
+            except Exception as e:
+                sl.error(f"An error occurred: {e}")
         else:
-            sl.warning("**You must enter an OpenRouter API key first!**")
+            sl.warning("Please upload a job description and at least one resume.")
 
 
 if __name__ == "__main__":
