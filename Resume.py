@@ -5,3 +5,4 @@ class Resume:
         self.name = name
         self.embedding = embedding
         self.similarity = similarity
+

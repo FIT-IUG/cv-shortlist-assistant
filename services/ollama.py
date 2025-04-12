@@ -1,5 +1,6 @@
 import requests
 
+
 RESUME_PROMPT = """
     Extract the skills, experience, and qualifications from the following Resume text with the output 
     is precise and abbreviated.

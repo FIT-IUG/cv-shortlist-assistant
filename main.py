@@ -16,6 +16,7 @@ from services.ollama import (
     final_analysis,
 )
 from embeddings.embeddingGen import EmbeddingGenerator
+
 # from testing.test_File import test_pdfFile_parsing, test_docxFile_parsing, test_embedding, test_similarity, \
 #     test_threshold, \
 #     test_request, test_extraction, test_shortlisting, test_analysis
@@ -108,11 +109,10 @@ def main():
                     resumes_f = []
                     i = 1
                     for features, res in zip(resume_features, resumes):
-                        res.name = f"Resume {i}"
-                        sl.write(res.name)
+                        sl.write(f"Resume {i}:")
                         sl.write(features)
                         sl.write(f"Cosine Similarity: {res.similarity}")
-                        resume = f"{res.name}: {features}\nCosine Similarity: {res.similarity}"
+                        resume = f"Resume {i}: {features}\nCosine Similarity: {res.similarity}"
                         resumes_f.append(resume)
                         i = i + 1
 
@@ -123,7 +123,7 @@ def main():
                     sl.write(short)  # output shortlist
                     sl.divider()
                     # Analyze top candidates' strengths and weaknesses, then conclude the best resume
-                    sl.write(" :red[Analyzing shortlisted candidates' strengths and weaknesses, "
+                    sl.write(" :red[Analyzing shortlist's strengths and weaknesses, "
                              "and concluding the best applicant...]")
                     analysis = make_request(final_analysis(RESUME_PROMPT3, job_text, short), OPENROUTER_API_KEY)
                     sl.write(analysis)  # output analysis
@@ -146,3 +146,4 @@ if __name__ == "__main__":
     # test_extraction()
     # test_shortlisting()
     # test_analysis()
+
