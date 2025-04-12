@@ -1,3 +1,5 @@
+import os
+
 import streamlit as sl
 
 from Resume import Resume
@@ -68,7 +70,8 @@ def main():
                             sl.error("Resume texts are empty!")
                             return
                         else:
-                            resumes.append(Resume(text))
+                            name = os.path.splitext(f.name)[0]
+                            resumes.append(Resume(text, f"Resume {name}"))
 
                     # Generating Embedding for the job description
                     embedder = EmbeddingGenerator()
@@ -109,10 +112,10 @@ def main():
                     resumes_f = []
                     i = 1
                     for features, res in zip(resume_features, resumes):
-                        sl.write(f"Resume {i}:")
+                        sl.write(f"{res.name}:")
                         sl.write(features)
                         sl.write(f"Cosine Similarity: {res.similarity}")
-                        resume = f"Resume {i}: {features}\nCosine Similarity: {res.similarity}"
+                        resume = f"{res.name}: {features}\nCosine Similarity: {res.similarity}"
                         resumes_f.append(resume)
                         i = i + 1
 
