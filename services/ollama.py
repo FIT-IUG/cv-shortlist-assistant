@@ -1,7 +1,4 @@
-from dotenv import load_dotenv
-import os
 import requests
-
 
 RESUME_PROMPT = """
     Extract the skills, experience, and qualifications from the following Resume text with the output 

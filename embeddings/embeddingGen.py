@@ -6,7 +6,6 @@ torch.classes.__path__ = []  # to solve the error that happen between torch and 
 
 class EmbeddingGenerator:
     def __init__(self):
-
         try:
             self.tokenizer = AutoTokenizer.from_pretrained(
                 "nomic-ai/nomic-embed-text-v1", trust_remote_code=True
